@@ -1,8 +1,8 @@
 from django import forms
-from website.models import Customer
+from chat.models.student import Student
 
-class CustomerForm(forms.ModelForm):
+class StudentForm(forms.ModelForm):
 
     class Meta:
-        model = Customer
-        fields = (cohort)
+        model = Student
+        fields = ('cohort',)

@@ -3,7 +3,6 @@ from django.db import models
 
 
 class Student(models.Model):
-    name = models.CharField(max_length=20)
     cohort = models.CharField(max_length=20)
     is_instructor = models.BooleanField(default=False)
     is_senior = models.BooleanField(default=False)
