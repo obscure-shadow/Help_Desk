@@ -5,10 +5,14 @@
     <title>Help Desk</title>
 </head>
 <body>
+  {% if user.is_authenticated %}
     <div class="helpdesk">
     <textarea id="chat-log" cols="100" rows="20"></textarea><br/>
     <input id="chat-message-input" type="text" size="100"/><br/>
     <input id="chat-message-submit" type="button" value="Send"/>
+    <form action="/chat/logout">
+      <input type="submit" value="logout" />
+    </form>
 </body>
 <script>
     var roomName = {{ room_name_json }};
@@ -44,4 +48,8 @@
       messageInputDom.value = '';
     };
 </script>
+    {% else %}
+    {% include "login.html" %}
+    {% endif %}
+</body>
 </html>
