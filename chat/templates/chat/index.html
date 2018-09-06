@@ -1,27 +1,25 @@
 <!-- chat/templates/chat/index.html -->
 <!DOCTYPE html>
+{% load staticfiles %}
 <html>
 <head>
     <meta charset="utf-8"/>
-    <title>Chat Rooms</title>
+    <title>Help Desk</title>
 </head>
 <body>
-    What chat room would you like to enter?<br/>
-    <input id="room-name-input" type="text" size="100"/><br/>
-    <input id="room-name-submit" type="button" value="Enter"/>
+  {% comment %} {% block main %} {% include "nav_bar.html" with nav_location=view.location %} {% endblock main %} {% endcomment %}
+  <h1>Welcome to Help Desk!</h1>
+  {% if user.is_authenticated %}
+    <h1>{{ user.username }}!</h1>
+    <form action="/chat/helpdesk">
+      <input type="submit" value="Enter!" />
+    </form>
+    {% else %}
+    {% include "login.html" %}
+    {% endif %}
 
-    <script>
-        document.querySelector('#room-name-input').focus();
-        document.querySelector('#room-name-input').onkeyup = function(e) {
-            if (e.keyCode === 13) {  // enter, return
-                document.querySelector('#room-name-submit').click();
-            }
-        };
+</body>
 
-        document.querySelector('#room-name-submit').onclick = function(e) {
-            var roomName = document.querySelector('#room-name-input').value;
-            window.location.pathname = '/chat/' + roomName + '/';
-        };
-    </script>
+</html>
 </body>
 </html>

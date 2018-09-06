@@ -1,0 +1,23 @@
+<form id="login_form" method="post" action="/chat/helpdesk/">
+        {% comment %} This weird input hides the variable that holds a redirect path when the login form is submitted. {% endcomment %}
+        <input type="hidden" name="next" value="{{ next }}"/>
+        {% csrf_token %} Username:
+        <input type="text" name="username" value="" size="50" />
+        <br /> Password:
+        <input type="password" name="password" value="" size="50" />
+        <br />
+
+        <input id="submit" type="submit" value="submit" />
+    </form>
+    {% comment %}
+<script>
+  document.querySelector('#submit').onclick = function(e) {
+            window.location.pathname = '/chat/helpdesk';
+        };
+    </script>
+
+      {% endcomment %}
+    <div>
+      <a href="{% url 'register' %}">Don't have an account? Register now.</a>
+    </div>
+

@@ -1,22 +1,16 @@
-from django.shortcuts import render
-from django.utils.safestring import mark_safe
-import json
 from django.contrib.auth import logout, login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.shortcuts import render
 from django.template import RequestContext
-from chat.forms import UserForm, StudentForm
-
+from website.forms import UserForm, studentForm
 
 def index(request):
-    return render(request, 'chat/index.html', {})
+    template_name = 'index.html'
+    return render(request, template_name, {})
 
 
-def room(request, room_name):
-    return render(request, 'chat/room.html', {
-        'room_name_json': mark_safe(json.dumps(room_name))
-    })
-
+# Create your views here.
 def register(request):
     '''Handles the creation of a new user for authentication
 
@@ -53,7 +47,7 @@ def register(request):
 
     elif request.method == 'GET':
         user_form = UserForm()
-        student_form = StudentForm()
+        student_form = studentForm()
         template_name = 'register.html'
         return render(request, template_name, {'user_form': user_form, 'student_form': student_form})
 
