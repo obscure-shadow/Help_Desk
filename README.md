@@ -9,7 +9,8 @@
 3. `$python3 install django`
 4. `$pip install django-channels`
 5. `$python3 manage.py migrate`
-6. `$python3 manage.py runserver`
+6. $ docker run -p 6379:6379 -d redis:2.8
+7. `$python3 manage.py runserver`
 
 this app is currently under a whole lot of construction,
 I will be adding more as time goes on, so we shall see how
