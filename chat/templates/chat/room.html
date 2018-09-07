@@ -9,6 +9,11 @@
     <textarea id="chat-log" cols="100" rows="20"></textarea><br/>
     <input id="chat-message-input" type="text" size="100"/><br/>
     <input id="chat-message-submit" type="button" value="Send"/>
+    {% if user.is_authenticated %}
+    <form action="/chat/logout">
+      <input type="submit" value="logout" />
+    </form>
+    {% endif %}
 </body>
 <script>
     var roomName = {{ room_name_json }};
@@ -44,4 +49,5 @@
       messageInputDom.value = '';
     };
 </script>
+</body>
 </html>

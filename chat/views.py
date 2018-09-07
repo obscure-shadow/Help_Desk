@@ -69,7 +69,7 @@ def login_user(request):
     context = RequestContext(request)
 
     # Stores the path the users were trying to get to originally if its different or takes them to the home screen
-    next = request.GET.get('next') or '/website'
+    next = request.GET.get('next') or '/chat'
     # If the request is a HTTP POST, try to pull out the relevant information.
     if request.method == 'POST':
 
@@ -102,7 +102,7 @@ def user_logout(request):
 
     # Take the user back to the homepage. Is there a way to not hard code
     # in the URL in redirects?????
-    return HttpResponseRedirect('/website')
+    return HttpResponseRedirect('/chat')
 
 
 # def sell_product(request):

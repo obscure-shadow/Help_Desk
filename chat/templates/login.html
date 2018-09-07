@@ -1,4 +1,4 @@
-<form id="login_form" method="post" action="/chat/helpdesk/">
+<form id="login_form" method="post" action="{% url 'helpdesk' %}">
         {% comment %} This weird input hides the variable that holds a redirect path when the login form is submitted. {% endcomment %}
         <input type="hidden" name="next" value="{{ next }}"/>
         {% csrf_token %} Username:
