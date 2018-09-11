@@ -1,11 +1,34 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
 import json
+# from channels import Group
+# from channels.auth import channel_session_user, channel_session_user_from_http
+
+
+# @channel_session_user_from_http
+# async def ws_connect(message):
+#     Group('users').add(message.reply_channel)
+#     Group('users').send({
+#         'text': json.dumps({
+#             'username': message.user.username,
+#             'is_logged_in': True
+#         })
+#     })
+
+
+# @channel_session_user
+# async def ws_disconnect(message):
+#     Group('users').send({
+#         'text': json.dumps({
+#             'username': message.user.username,
+#             'is_logged_in': False
+#         })
+#     })
+#     Group('users').discard(message.reply_channel)
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = 'chat_%s' % self.room_name
-
         # Join room group
         await self.channel_layer.group_add(
             self.room_group_name,
@@ -35,6 +58,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             }
         )
 
+
     # Receive message from room group
     async def chat_message(self, event):
         message = event['message']
@@ -43,3 +67,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'message': message
         }))
+
+
+
+
+

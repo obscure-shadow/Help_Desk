@@ -12,7 +12,7 @@ def index(request):
     return render(request, 'chat/index.html', {})
 
 
-def room(request, room_name):
+def room(request, room_name="helpdesk"):
     return render(request, 'chat/room.html', {
         'room_name_json': mark_safe(json.dumps(room_name))
     })
@@ -81,7 +81,7 @@ def login_user(request):
         # If authentication was successful, log the user in
         if authenticated_user is not None:
             login(request=request, user=authenticated_user)
-            return HttpResponseRedirect(request.POST.get('next'))
+            return HttpResponseRedirect("/chat/helpdesk")
 
         else:
             # Bad login details were provided. So we can't log the user in.
