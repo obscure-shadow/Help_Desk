@@ -6,7 +6,12 @@
 </head>
 <body>
     <div class="helpdesk">
-      <textarea id="users" cols="25" rows="10"></textarea>
+      <h1> Welcome To Help Desk </h1>
+      <div id="users" cols="25" rows="10">
+  {% for usernames in online_users %}
+  <p>{{ usernames.username }}</p>
+  {% endfor %}
+      </textarea>
     <textarea id="chat-log" cols="100" rows="20"></textarea><br/>
     <input id="chat-message-input" type="text" size="100"/><br/>
     <input id="chat-message-submit" type="button" value="Send"/>
@@ -25,20 +30,22 @@
         'ws://' + window.location.host +
         '/ws/chat/' + roomName + '/');
 
+    console.log(document.querySelector('#users').value)
 
     chatSocket.onmessage = function(e) {
         var data = JSON.parse(e.data);
         var message = data['message'];
-        console.log(data)
+        {% comment %}
       if (data['message'].hasOwnProperty('logged_in')){
-
         var logged_in = data['message']['logged_in']
           document.querySelector('#users').value += (logged_in + '\n');
-        }else if (message !== ""){
+        }else
+      {% endcomment %}
+        if (message !== ""){
           document.querySelector('#chat-log').value += (message + '\n');
         }
     };
-
+    {% comment %}
     chatSocket.onopen = () => {
       chatSocket.send(JSON.stringify({
         'message':{
@@ -46,7 +53,7 @@
         }
       }))
     }
-
+    {% endcomment %}
     chatSocket.onclose = function(e) {
         console.log('Chat socket closed unexpectedly');
     };
