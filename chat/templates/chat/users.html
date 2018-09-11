@@ -1,0 +1,6 @@
+{% extends 'room.html' %}
+{% block content %}
+  {% for usernames in users %}
+  <p>{{ usernames.username }}</p>
+  {% endfor %}
+{% endblock %}

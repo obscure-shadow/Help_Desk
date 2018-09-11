@@ -6,6 +6,10 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.template import RequestContext
 from chat.forms import UserForm, StudentForm
+from chat.models.student import Student
+from django.contrib.auth.models import User
+from django.contrib.sessions.models import Session
+from django.utils import timezone
 
 
 def index(request):
@@ -13,9 +17,15 @@ def index(request):
 
 
 def room(request, room_name="helpdesk"):
+    active_sessions = Session.objects.filter(expire_date__gte=timezone.now())
+    user_id_list = []
+    for session in active_sessions:
+        data = session.get_decoded()
+        user_id_list.append(data.get('_auth_user_id', None))
+        # Query all logged in users based on id list
+    online_users = User.objects.filter(id__in=user_id_list)
     return render(request, 'chat/room.html', {
-        'room_name_json': mark_safe(json.dumps(room_name))
-    })
+        'room_name_json': mark_safe(json.dumps(room_name)), 'online_users': online_users})
 
 def register(request):
     '''Handles the creation of a new user for authentication
@@ -104,33 +114,15 @@ def user_logout(request):
     # in the URL in redirects?????
     return HttpResponseRedirect('/chat')
 
+def get_current_users(request):
+    active_sessions = Session.objects.filter(expire_date__gte=timezone.now())
+    user_id_list = []
+    for session in active_sessions:
+        data = session.get_decoded()
+        user_id_list.append(data.get('_auth_user_id', None))
+        # Query all logged in users based on id list
+    user_list = User.objects.all()
+    print(user_list)
+    return (request, 'users.html', {'users': user_list})
 
-# def sell_product(request):
-#     if request.method == 'GET':
-#         product_form = ProductForm()
-#         template_name = 'product/create.html'
-#         return render(request, template_name, {'product_form': product_form})
-
-#     elif request.method == 'POST':
-#         form_data = request.POST
-
-#         p = Product(
-#             seller = request.user,
-#             title = form_data['title'],
-#             description = form_data['description'],
-#             price = form_data['price'],
-#             quantity = form_data['quantity'],
-#         )
-#         p.save()
-#         template_name = 'product/success.html'
-#         return render(request, template_name, {})
-
-# def list_products(request):
-#     all_products = Product.objects.all()
-#     template_name = 'product/list.html'
-#     return render(request, template_name, {'products': all_products})
-
-
-
-
-
+# .filter(id__in=user_id_list)
