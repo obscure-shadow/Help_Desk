@@ -1,0 +1,8 @@
+.users, .tickets {
+  border: 2px solid black;
+  padding: 10px;
+  width: fit-content;
+  float: left;
+}
+
+
