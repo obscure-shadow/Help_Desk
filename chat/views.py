@@ -1,12 +1,13 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.utils.safestring import mark_safe
 import json
 from django.contrib.auth import logout, login, authenticate
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.template import RequestContext
-from chat.forms import UserForm, StudentForm
+from chat.forms import UserForm, StudentForm, IssueForm
 from chat.models.student import Student
+from chat.models.issue import Issue
 from django.contrib.auth.models import User
 from django.contrib.sessions.models import Session
 from django.utils import timezone
@@ -24,8 +25,15 @@ def room(request, room_name="helpdesk"):
         user_id_list.append(data.get('_auth_user_id', None))
         # Query all logged in users based on id list
     online_users = User.objects.filter(id__in=user_id_list)
+    issues = Issue.objects.filter(is_complete=False)
+    issue_form = IssueForm()
+    if request.method == "POST":
+        user_id = request.user
+        new_issue = request.POST['issue']
+        issue = Issue(issue_desc=new_issue, user=user_id)
+        issue.save()
     return render(request, 'chat/room.html', {
-        'room_name_json': mark_safe(json.dumps(room_name)), 'online_users': online_users})
+       'room_name_json': mark_safe(json.dumps(room_name)), 'online_users': online_users, 'issues': issues, 'issue_form':issue_form})
 
 def register(request):
     '''Handles the creation of a new user for authentication
@@ -114,15 +122,3 @@ def user_logout(request):
     # in the URL in redirects?????
     return HttpResponseRedirect('/chat')
 
-def get_current_users(request):
-    active_sessions = Session.objects.filter(expire_date__gte=timezone.now())
-    user_id_list = []
-    for session in active_sessions:
-        data = session.get_decoded()
-        user_id_list.append(data.get('_auth_user_id', None))
-        # Query all logged in users based on id list
-    user_list = User.objects.all()
-    print(user_list)
-    return (request, 'users.html', {'users': user_list})
-
-# .filter(id__in=user_id_list)
