@@ -16,10 +16,18 @@
   {% endfor %}
       </div>
       <div class='tickets' id="chat-log">
+        {% for issue in issues %}
+        <p>{{issue.user}}: {{issue.issue_desc}}</p>
+        {% endfor%}
       </div>
       <hr>
     <input id="chat-message-input" type="text" size="100"/><br/>
     <input id="chat-message-submit" type="button" value="Send"/>
+    <form id="issue" method="post">
+      {% csrf_token %}
+      <input name='issue' type="text" size="100"/><br/>
+      <input type="submit" value="get help" />
+    </form>
     <form action="{% url 'logout' %}">
       <input type="submit" value="logout" />
     </form>
@@ -39,12 +47,12 @@
     chatSocket.onmessage = function(e) {
         var data = JSON.parse(e.data);
         var message = data['message'];
-        {% comment %}
+    {% comment %}
       if (data['message'].hasOwnProperty('logged_in')){
         var logged_in = data['message']['logged_in']
           document.querySelector('#users').value += (logged_in + '\n');
         }else
-      {% endcomment %}
+    {% endcomment %}
       if (message['message'] !== ""){
           let ticket = document.createElement('div')
         ticket.textContent = (`${message['user']}: ${message['message']}`);
