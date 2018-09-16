@@ -18,6 +18,16 @@ def index(request):
 
 
 def room(request, room_name="helpdesk"):
+    '''
+    this function handles almost everything, i should probably refactor it at some point to help
+    break up some of the stuff that it does... but here's what it does
+        -get a list of active users
+        -get a list of active help issues
+        -handle json request coming in from room.html
+        -render all this stuff to room.html (/chat/helpdesk)
+    author: David Paul
+    '''
+    # handles showing list of active users set by session
     active_sessions = Session.objects.filter(expire_date__gte=timezone.now())
     user_id_list = []
     for session in active_sessions:
@@ -25,15 +35,24 @@ def room(request, room_name="helpdesk"):
         user_id_list.append(data.get('_auth_user_id', None))
         # Query all logged in users based on id list
     online_users = User.objects.filter(id__in=user_id_list)
+
+    # grabs list of issues that are not completed
     issues = Issue.objects.filter(is_complete=False)
-    issue_form = IssueForm()
+
+    # handles Json requests coming in through post method.
     if request.method == "POST":
         user_id = request.user
-        new_issue = request.POST['issue']
-        issue = Issue(issue_desc=new_issue, user=user_id)
-        issue.save()
+        action = json.loads(request.body)['action']
+        if action == "save":
+            new_issue = json.loads(request.body)['issue']
+            issue = Issue(issue_desc=new_issue, user=user_id)
+            issue.save()
+        elif action == "solved":
+            iss_id = json.loads(request.body)['id']
+            issue = Issue.objects.filter(id=iss_id)
+            issue.delete()
     return render(request, 'chat/room.html', {
-       'room_name_json': mark_safe(json.dumps(room_name)), 'online_users': online_users, 'issues': issues, 'issue_form':issue_form})
+       'room_name_json': mark_safe(json.dumps(room_name)), 'online_users': online_users, 'issues': issues,})
 
 def register(request):
     '''Handles the creation of a new user for authentication

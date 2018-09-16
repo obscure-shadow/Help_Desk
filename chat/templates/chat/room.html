@@ -17,17 +17,13 @@
       </div>
       <div class='tickets' id="chat-log">
         {% for issue in issues %}
-        <p>{{issue.user}}: {{issue.issue_desc}}</p>
+        <p id ="{{ issue.pk }}">{{issue.user}}: {{issue.issue_desc}} <button id='{{ issue.pk }}' onclick="solved(this.id)" class='solved'> solved </button>
+        </p>
         {% endfor%}
       </div>
       <hr>
-    <input id="chat-message-input" type="text" size="100"/><br/>
-    <input id="chat-message-submit" type="button" value="Send"/>
-    <form id="issue" method="post">
-      {% csrf_token %}
-      <input name='issue' type="text" size="100"/><br/>
-      <input type="submit" value="get help" />
-    </form>
+      <input id="chat-message-input" name='issue' type="text" size="100"/><br/>
+      <button id="chat-message-submit" disabled="disabled">Get Help</button>
     <form action="{% url 'logout' %}">
       <input type="submit" value="logout" />
     </form>
@@ -45,52 +41,104 @@
 
 
     chatSocket.onmessage = function(e) {
-        var data = JSON.parse(e.data);
-        var message = data['message'];
-    {% comment %}
-      if (data['message'].hasOwnProperty('logged_in')){
-        var logged_in = data['message']['logged_in']
-          document.querySelector('#users').value += (logged_in + '\n');
-        }else
-    {% endcomment %}
-      if (message['message'] !== ""){
-          let ticket = document.createElement('div')
-        ticket.textContent = (`${message['user']}: ${message['message']}`);
-          document.querySelector('#chat-log').appendChild(ticket)
-        }
+      var data = JSON.parse(e.data);
+      var message = data['message'];
+      let type = data['message']['type']
+      if (type === "message"){
+            let ticket = document.createElement('div')
+            let button = document.createElement('button')
+            button.setAttribute('class','solved')
+            button.setAttribute('id',`{{ issue.id }}`)
+            button.textContent = 'Solved'
+            ticket.textContent = (`${message['user']}: ${message['message']}`);
+            ticket.appendChild(button)
+            document.querySelector('#chat-log').appendChild(ticket)
+          }
+      else if (type === "solved"){
+        document.getElementById(message['message']).remove()
+      }
     };
-    {% comment %}
-    chatSocket.onopen = () => {
-      chatSocket.send(JSON.stringify({
-        'message':{
-        'logged_in': `{{user.username}}`
-        }
-      }))
-    }
-    {% endcomment %}
     chatSocket.onclose = function(e) {
         console.log('Chat socket closed unexpectedly');
     };
 
     document.querySelector('#chat-message-input').focus();
     document.querySelector('#chat-message-input').onkeyup = function(e) {
+        let inputfield = document.querySelector('#chat-message-input').value
+          let empty = false
+        if (inputfield !== ''){
+        document.querySelector('#chat-message-submit').removeAttribute("disabled")
+        }
         if (e.keyCode === 13) {  // enter, return
             document.querySelector('#chat-message-submit').click();
         }
     };
 
     document.querySelector('#chat-message-submit').onclick = function(e) {
-        var messageInputDom = document.querySelector('#chat-message-input');
+      document.querySelector('#chat-message-submit').setAttribute("disabled","disabled")
+      var messageInputDom = document.querySelector('#chat-message-input');
       var message = messageInputDom.value;
         chatSocket.send(JSON.stringify({
           'message': {
             'user': `{{ user.username }}`,
-            'message': message
+            'message': message,
+            'type': 'message'
           }
         }));
 
+
+      fetch('/chat/helpdesk', {
+        method:"POST",
+        body: JSON.stringify({
+          'issue': message,
+          'action': 'save'
+         }),
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrftoken,
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      })
       messageInputDom.value = '';
     };
+
+  function getCookie(name) {
+          if (!document.cookie) {
+            return null;
+          }
+          const token = document.cookie.split(';')
+            .map(c => c.trim())
+            .filter(c => c.startsWith(name + '='));
+
+          if (token.length === 0) {
+            return null;
+          }
+          return decodeURIComponent(token[0].split('=')[1]);
+        }
+
+  const csrftoken = getCookie('csrftoken')
+
+  let solved = (id) => {
+      fetch('/chat/helpdesk', {
+      method:"POST",
+      body: JSON.stringify({
+        'action': 'solved',
+        'id': id
+        }),
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrftoken,
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    })
+    // document.getElementById(id).remove()
+    chatSocket.send(JSON.stringify({
+      'message': {
+        'message': id,
+        'type': 'solved'
+      }
+    }))
+ }
+
 </script>
-</body>
 </html>
