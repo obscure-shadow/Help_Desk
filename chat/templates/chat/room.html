@@ -44,7 +44,11 @@
         var message = data['message'];
       if (message['message']['message'] !== ""){
           let ticket = document.createElement('div')
-        ticket.textContent = (`${message['user']}: ${message['message']}`);
+          let button = document.createElement('button')
+          button.setAttribute('id','solved')
+          button.textContent = 'Solved'
+          ticket.textContent = (`${message['user']}: ${message['message']}`);
+          ticket.appendChild(button)
           document.querySelector('#chat-log').appendChild(ticket)
         }
     };
@@ -102,7 +106,6 @@
           'X-Requested-With': 'XMLHttpRequest'
         }
       })
-      console.log(JSON.stringify({'issue': message}))
       messageInputDom.value = '';
     };
 </script>
