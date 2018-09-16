@@ -17,7 +17,7 @@
       </div>
       <div class='tickets' id="chat-log">
         {% for issue in issues %}
-        <p>{{issue.user}}: {{issue.issue_desc}} <button id='{{ issue.pk }}' onclick="solved(this.id)" class='solved'> solved </button>
+        <p id ="{{ issue.pk }}">{{issue.user}}: {{issue.issue_desc}} <button id='{{ issue.pk }}' onclick="solved(this.id)" class='solved'> solved </button>
         </p>
         {% endfor%}
       </div>
@@ -114,19 +114,20 @@
   const csrftoken = getCookie('csrftoken')
 
   let solved = (id) => {
-       fetch('/chat/helpdesk', {
-        method:"POST",
-        body: JSON.stringify({
-          'action': 'solved',
-          'id': id
-         }),
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': csrftoken,
-          'X-Requested-With': 'XMLHttpRequest'
-        }
-      })
-    console.log(id)
+      fetch('/chat/helpdesk', {
+      method:"POST",
+      body: JSON.stringify({
+        'action': 'solved',
+        'id': id
+        }),
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrftoken,
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    })
+    document.getElementById(`${id}`).remove()
  }
+
 </script>
 </html>
