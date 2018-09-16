@@ -17,7 +17,7 @@
       </div>
       <div class='tickets' id="chat-log">
         {% for issue in issues %}
-        <p>{{issue.user}}: {{issue.issue_desc}} <button id='{{ issue.pk }}' class='solved'> solved </button>
+        <p>{{issue.user}}: {{issue.issue_desc}} <button id='{{ issue.pk }}' onclick="solved(this.id)" class='solved'> solved </button>
         </p>
         {% endfor%}
       </div>
@@ -111,5 +111,8 @@
       })
       messageInputDom.value = '';
     };
+    let solved = (id) => {
+      console.log(id)
+    }
 </script>
 </html>
