@@ -26,14 +26,14 @@ def room(request, room_name="helpdesk"):
         # Query all logged in users based on id list
     online_users = User.objects.filter(id__in=user_id_list)
     issues = Issue.objects.filter(is_complete=False)
-    issue_form = IssueForm()
+    print(issues)
     if request.method == "POST":
         user_id = request.user
-        new_issue = request.POST['issue']
+        new_issue = json.loads(request.body)['issue']
         issue = Issue(issue_desc=new_issue, user=user_id)
         issue.save()
     return render(request, 'chat/room.html', {
-       'room_name_json': mark_safe(json.dumps(room_name)), 'online_users': online_users, 'issues': issues, 'issue_form':issue_form})
+       'room_name_json': mark_safe(json.dumps(room_name)), 'online_users': online_users, 'issues': issues,})
 
 def register(request):
     '''Handles the creation of a new user for authentication
