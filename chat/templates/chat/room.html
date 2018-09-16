@@ -17,7 +17,7 @@
       </div>
       <div class='tickets' id="chat-log">
         {% for issue in issues %}
-        <p>{{issue.user}}: {{issue.issue_desc}} {% if user.username == issue.user %} <button id='solved'> solved </button> {% endif %}
+        <p>{{issue.user}}: {{issue.issue_desc}} <button id='{{ issue.pk }}' class='solved'> solved </button>
         </p>
         {% endfor%}
       </div>
@@ -46,7 +46,8 @@
       if (message['message']['message'] !== ""){
           let ticket = document.createElement('div')
           let button = document.createElement('button')
-          button.setAttribute('id','solved')
+          button.setAttribute('class','solved')
+          button.setAttribute('id',`{{ issue.id }}`)
           button.textContent = 'Solved'
           ticket.textContent = (`${message['user']}: ${message['message']}`);
           ticket.appendChild(button)
@@ -99,7 +100,8 @@
       fetch('/chat/helpdesk', {
         method:"POST",
         body: JSON.stringify({
-          'issue': message
+          'issue': message,
+          'action': 'save'
          }),
         headers: {
           'Content-Type': 'application/json',
