@@ -17,7 +17,8 @@
       </div>
       <div class='tickets' id="chat-log">
         {% for issue in issues %}
-        <p>{{issue.user}}: {{issue.issue_desc}}</p>
+        <p>{{issue.user}}: {{issue.issue_desc}} {% if user.username == issue.user %} <button id='solved'> solved </button> {% endif %}
+        </p>
         {% endfor%}
       </div>
       <hr>
