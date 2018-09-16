@@ -42,9 +42,15 @@ def room(request, room_name="helpdesk"):
     # handles Json requests coming in through post method.
     if request.method == "POST":
         user_id = request.user
-        new_issue = json.loads(request.body)['issue']
-        issue = Issue(issue_desc=new_issue, user=user_id)
-        issue.save()
+        action = json.loads(request.body)['action']
+        if action == "save":
+            new_issue = json.loads(request.body)['issue']
+            issue = Issue(issue_desc=new_issue, user=user_id)
+            issue.save()
+        elif action == "solved":
+            iss_id = json.loads(request.body)['id']
+            issue = Issue.objects.filter(id=iss_id)
+            issue.delete()
     return render(request, 'chat/room.html', {
        'room_name_json': mark_safe(json.dumps(room_name)), 'online_users': online_users, 'issues': issues,})
 
