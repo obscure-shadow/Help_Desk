@@ -64,17 +64,18 @@
       var message = data['message'];
       let type = data['message']['type']
       if (type === "message"){
-            let ticket = document.createElement('div')
-            let button = document.createElement('button')
-            button.setAttribute('class','solved')
-            button.setAttribute('id',`{{ issue.id }}`)
-            button.setAttribute('onclick', 'solved(this.id)')
-            button.textContent = 'Solved'
-            ticket.setAttribute('class','issue')
-            ticket.textContent = (`${message['user']}: ${message['message']}`);
-            ticket.appendChild(button)
-            ticket.appendChild(document.createElement('hr'))
-            document.querySelector('#chat-log').appendChild(ticket)
+            //let ticket = document.createElement('div')
+            //let button = document.createElement('button')
+            //button.setAttribute('class','solved')
+            //button.setAttribute('id',`{{ issue.id }}`)
+            //button.setAttribute('onclick', 'solved(this.id)')
+            //button.textContent = 'Solved'
+            //ticket.setAttribute('class','issue')
+            //ticket.textContent = (`${message['user']}: ${message['message']}`);
+            //ticket.appendChild(button)
+            //ticket.appendChild(document.createElement('hr'))
+            //document.querySelector('#chat-log').appendChild(ticket)
+            location.reload()
           }
       else if (type === "solved"){
         document.getElementById(message['message']).remove()
