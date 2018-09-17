@@ -1,8 +1,66 @@
+body {
+  margin: 0;
+  display: flex;
+  flex-flow: column;
+  height: 100vh;
+}
+
 .users, .tickets {
   border: 2px solid black;
   padding: 10px;
   width: fit-content;
   float: left;
+  overflow-y: auto;
+}
+
+.tickets {
+  display: flex;
+  flex-direction: column;
+  flex-basis: 100%;
+}
+
+.issue {
+  margin: 3px;
+}
+
+.button{
+  margin: 8px;
+}
+
+#chat-message-input{
+  margin: 8px;
+}
+
+.boxes {
+  display: flex;
+  height: 100%;
+  align-items: stretch;
+  overflow-y: auto;
+  width; 100%;
+}
+
+.solved{
+  margin: 5px;
+  float: right;
+}
+
+.helpdesk{
+  display: flex;
+  justify-content: space-between;
+  margin: 8px;
+  padding: 8px;
 }
 
 
+.logout {
+  align-self: center;
+}
+
+h1, h3 {
+  display: inline-block;
+  margin: 5px;
+}
+
+hr {
+  margin-top: 0px;
+}

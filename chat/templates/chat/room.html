@@ -2,32 +2,51 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <link rel="shortcut icon" href="">
     <meta charset="utf-8"/>
     <title>Help Desk</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
     <div class="helpdesk">
-      <h1> Welcome To Help Desk </h1>
+      <h1> Welcome To Help Desk {{user.username}}!</h1>
+      <form action="{% url 'logout' %}" class="logout">
+        <input type="submit" value="logout" />
+      </form>
+    </div>
+
+
+    <div class="boxes">
       <div class="users" id="users">
         <h3>Online Students</h3>
-  {% for usernames in online_users %}
-  <p>{{ usernames.username }}</p>
-  {% endfor %}
+        <hr>
+          {% for usernames in online_users %}
+          <p>{{ usernames.username }}</p>
+          {% endfor %}
       </div>
       <div class='tickets' id="chat-log">
         {% for issue in issues %}
-        <p id ="{{ issue.pk }}">{{issue.user}}: {{issue.issue_desc}} <button id='{{ issue.pk }}' onclick="solved(this.id)" class='solved'> solved </button>
-        </p>
+        <div class="issue" id ="{{ issue.pk }}">
+          {{issue.user}}: {{issue.issue_desc}}
+          <button id='{{ issue.pk }}' onclick="solved(this.id)" class='solved'>
+            Solved
+          </button>
+          <hr>
+        </div>
         {% endfor%}
-      </div>
-      <hr>
-      <input id="chat-message-input" name='issue' type="text" size="100"/><br/>
-      <button id="chat-message-submit" disabled="disabled">Get Help</button>
-    <form action="{% url 'logout' %}">
-      <input type="submit" value="logout" />
-    </form>
+    </div>
+  </div>
+
+  <div class="input">
+    <p class="foot_desc">
+      Please type a description and submit to get help! :
+    </p>
+    <input id="chat-message-input" name='issue' type="text" size="100"/><br/>
+    <button id="chat-message-submit" class="button" disabled="disabled">Get Help</button>
+  </div>
+
 </body>
+
 <script>
     var roomName = {{ room_name_json }};
 
@@ -49,9 +68,12 @@
             let button = document.createElement('button')
             button.setAttribute('class','solved')
             button.setAttribute('id',`{{ issue.id }}`)
+            button.setAttribute('onclick', 'solved(this.id)')
             button.textContent = 'Solved'
+            ticket.setAttribute('class','issue')
             ticket.textContent = (`${message['user']}: ${message['message']}`);
             ticket.appendChild(button)
+            ticket.appendChild(document.createElement('hr'))
             document.querySelector('#chat-log').appendChild(ticket)
           }
       else if (type === "solved"){
