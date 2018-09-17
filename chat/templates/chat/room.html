@@ -8,8 +8,11 @@
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
+  {% if user.is_authenticated %}
     <div class="helpdesk">
-      <h1> Welcome To Help Desk {{user.username}}!</h1>
+      <div class='heading'>
+      <h1> Welcome To Help Desk, {{user.username}}!</h1>
+      </div>
       <form action="{% url 'logout' %}" class="logout">
         <input type="submit" value="logout" />
       </form>
@@ -18,8 +21,9 @@
 
     <div class="boxes">
       <div class="users" id="users">
+        <div class='user-head'>
         <h3>Online Students</h3>
-        <hr>
+        </div>
           {% for usernames in online_users %}
           <p>{{ usernames.username }}</p>
           {% endfor %}
@@ -28,23 +32,33 @@
         {% for issue in issues %}
         <div class="issue" id ="{{ issue.pk }}">
           {{issue.user}}: {{issue.issue_desc}}
+          {% if user.username == issue.user.username %}
+
           <button id='{{ issue.pk }}' onclick="solved(this.id)" class='solved'>
             Solved
           </button>
-          <hr>
+          {% endif %}
         </div>
+        {% empty %}
+         <div class="empty">
+           <h3 class="empty-h3">All the problems have been solved!</h3>
+         </div>
         {% endfor%}
     </div>
   </div>
 
   <div class="input">
-    <p class="foot_desc">
-      Please type a description and submit to get help! :
-    </p>
+    <div class="foot_desc">
+      Please type a description and press get help to get help! :
+    </div>
+    <div class="foot_inp">
     <input id="chat-message-input" name='issue' type="text" size="100"/><br/>
     <button id="chat-message-submit" class="button" disabled="disabled">Get Help</button>
+    </div>
   </div>
-
+    {% else %}
+    {% include "login.html" %}
+    {% endif %}
 </body>
 
 <script>
