@@ -8,6 +8,14 @@
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
 </head>
 <body>
+  {% comment %}
+
+  This Area checks To see if the user is authenticated, and if so it renders the
+  Help desk room and opens a websocket connection to the server and adds the user to
+  a list of online users, and populates a list of other online users for them to view
+
+  {% endcomment %}
+
   {% if user.is_authenticated %}
     <div class="helpdesk">
       <div class='heading'>
@@ -62,43 +70,42 @@
 </body>
 
 <script>
+  // make a variable of the name of the room
     var roomName = {{ room_name_json }};
 
+  // make a variable that starts a new websocket with the room name
     var chatSocket = new WebSocket(
         'ws://' + window.location.host +
         '/ws/chat/' + roomName + '/');
 
+  // make a variable of a websocket with the username
+  // this is not currently being used in the program but might be in the future
     var userSocket = new WebSocket(
         'ws://' + window.location.host +
         '/ws/chat/' + roomName + '/');
 
-
+  // function to handle when a message goes to the websocket
+  // recieves the data, parses it, and then uses logical operators to determin the nature of the message
+  // and complete actions based on the type of the message
     chatSocket.onmessage = function(e) {
       var data = JSON.parse(e.data);
       var message = data['message'];
       let type = data['message']['type']
       if (type === "message"){
-            //let ticket = document.createElement('div')
-            //let button = document.createElement('button')
-            //button.setAttribute('class','solved')
-            //button.setAttribute('id',`{{ issue.id }}`)
-            //button.setAttribute('onclick', 'solved(this.id)')
-            //button.textContent = 'Solved'
-            //ticket.setAttribute('class','issue')
-            //ticket.textContent = (`${message['user']}: ${message['message']}`);
-            //ticket.appendChild(button)
-            //ticket.appendChild(document.createElement('hr'))
-            //document.querySelector('#chat-log').appendChild(ticket)
-            location.reload()
+           location.reload()
           }
       else if (type === "solved"){
         document.getElementById(message['message']).remove()
       }
     };
+
+  // warning message when the websocket closes unexpectedly
     chatSocket.onclose = function(e) {
         console.log('Chat socket closed unexpectedly');
     };
 
+  // this deactivates the submit button if nothing has been entered, and also allows
+  // the user to submit the ticket by pressing enter instead of clicking on the submit button
     document.querySelector('#chat-message-input').focus();
     document.querySelector('#chat-message-input').onkeyup = function(e) {
         let inputfield = document.querySelector('#chat-message-input').value
@@ -111,6 +118,8 @@
         }
     };
 
+  // function to handle the submission action. sends the message to the chat socket along with relavent
+  // information and also handles a json post request to the django side that is handling all the data
     document.querySelector('#chat-message-submit').onclick = function(e) {
       document.querySelector('#chat-message-submit').setAttribute("disabled","disabled")
       var messageInputDom = document.querySelector('#chat-message-input');
@@ -139,6 +148,9 @@
       messageInputDom.value = '';
     };
 
+  //  function to handle cookies so that you have a csrf token to make sure that submissions are secure
+  //  the way csrf tokens are saved in cookies is not the way django wants them so it does some tidying up
+  //  as well
   function getCookie(name) {
           if (!document.cookie) {
             return null;
@@ -155,6 +167,8 @@
 
   const csrftoken = getCookie('csrftoken')
 
+  // handles the deletion of solved issues, checks to make sure that only users that submitted
+  // that particular issue can mark them solved.
   let solved = (id) => {
       fetch('/chat/helpdesk', {
       method:"POST",
